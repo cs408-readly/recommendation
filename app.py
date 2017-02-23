@@ -1,6 +1,9 @@
 from flask import Flask
-
 from pymongo import MongoClient
+from scipy.spatial.distance import cosine
+
+from models.database import DB
+from models.user import User
 
 app = Flask(__name__)
 
@@ -16,48 +19,32 @@ def not_found(error):
 
 @app.route('/api/recommend/<int:user_id>', methods = ['GET'])
 def get_recommendation(user_id):
-    get_recommendations(user_id)
-    return 'Hello user # %d' % user_id
+    return get_recommendations(user_id)
 
 def get_recommendations(user_id):
     """
     Responsible for returning the recommendations to the user
     """
 
-    user_data = get_user_data(user_id)
+    db = DB()
 
-    all_data = get_user_data()
+    Users = User(db)
 
-def get_data(user_id):
-    pass
+    user_data = Users.get_preferences(user_id)
 
-def get_all_data():
-    pass
+    all_data = Users.get_preferences()
 
-class DataHandler:
+    distances = []
 
-    def __init__(self):
+    for data in all_data:
 
-        self.client = MongoClient('mongodb://root:password@ds145639.mlab.com:45639/readly')
-        self.db = self.client.readly
+        distances.append( (cosine(user_data, data), data) )
 
-    def get_data(self, user_id=None):
+    similar_users = sorted(distances, key=lambda x: return x[0])[:10]
 
-        users = self.db.users
+    similar_users = np.array(similar_users)
 
-        if user_id is not None:
+    sum_users = np.sum(similar_users, axis=1)
 
-            data = users.find_one({ '_id': user_id })
-
-        else:
-
-            cur = users.find()
-
-            data = []
-            for doc in cur:
-                data.append(doc)
-
-        return data
-
-
+    return sorted(enumerate(sum_users), key=lambda x: return x[1])
 
