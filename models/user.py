@@ -15,7 +15,9 @@ class User:
             cur = self.user.find()
             for doc in cur:
 
-                counts = [item['count'] for item in doc['sources']]
+                items = [item for item in doc['sources']]
+                sorted_items = sorted(items, key=lambda x: return x.key())
+                counts = [item.value() for item in sorted_items]
                 data.append(counts)
 
             return np.array(data)
