@@ -1,4 +1,5 @@
 import numpy as np
+from bson.objectid import ObjectId
 
 class User:
 
@@ -12,20 +13,26 @@ class User:
 
             data = []
 
-            cur = self.user.find()
+            cur = self.user.find({})
             for doc in cur:
 
-                items = [item for item in doc['sources']]
-                sorted_items = sorted(items, key=lambda x: return x.key())
-                counts = [item.value() for item in sorted_items]
+                items = [(item, doc['local']['sources'][item]) for item in doc['local']['sources']]
+                sorted_items = sorted(items, key=lambda x: x[0])
+
+                counts = [item[1] for item in sorted_items]
                 data.append(counts)
 
             return np.array(data)
 
-
         else:
 
-            user = self.user.find_one({ '_id': user_id })
-            data = np.array(user.sources)
+            user = self.user.find_one({ '_id': ObjectId(user_id) })
 
-            return data
+            items = [(item, user['local']['sources'][item]) for item in user['local']['sources']]
+            sorted_items = sorted(items, key=lambda x: x[0])
+
+            counts = [item[1] for item in sorted_items]
+
+            find_dict = { i:source for i, source in enumerate(sorted(user['local']['sources']))}
+
+            return np.array(counts), find_dict
