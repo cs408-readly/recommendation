@@ -47,7 +47,7 @@ def get_recommendations(user_id):
     sum_users = np.sum(similar_users, axis=0)
 
     results = sorted(enumerate(sum_users), key=lambda x: x[1], reverse=True)[:10]
-    return_val = [find_dict[result[0]] for result in results]
+    return_val = [find_dict[result[0]] for result in results].reverse()
 
     return return_val
 

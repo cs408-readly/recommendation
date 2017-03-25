@@ -16,17 +16,21 @@ class User:
             cur = self.user.find({})
             for doc in cur:
 
-                items = [(item, doc['local']['sources'][item]) for item in doc['local']['sources']]
-                sorted_items = sorted(items, key=lambda x: x[0])
+                try:
+                    items = [(item, doc['local']['sources'][item]) for item in doc['local']['sources']]
+                    sorted_items = sorted(items, key=lambda x: x[0])
 
-                counts = [item[1] for item in sorted_items]
-                data.append(counts)
+                    counts = [item[1] for item in sorted_items]
+                    data.append(counts)
+                except KeyError:
+                    print(doc)
 
             return np.array(data)
 
         else:
 
             user = self.user.find_one({ '_id': ObjectId(user_id) })
+            print(user)
 
             items = [(item, user['local']['sources'][item]) for item in user['local']['sources']]
             sorted_items = sorted(items, key=lambda x: x[0])
