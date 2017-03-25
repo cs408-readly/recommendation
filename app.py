@@ -51,4 +51,3 @@ def get_recommendations(user_id):
 
     return return_val
 
-app.run()
