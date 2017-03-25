@@ -21,6 +21,10 @@ def not_found(error):
     return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
 
+@app.route('/', methods = ['GET'])
+def hello_world():
+    return 'Hello World!'
+
 @app.route('/recommend', methods = ['POST'])
 def get_recommendation():
     user_id = request.form['user_id'][1:-1]
